@@ -1,0 +1,59 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in · Impact Nexus</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<div class="auth-shell">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <span class="brand-mark">IN</span>
+            <div class="brand-text">
+                <strong>Impact Nexus</strong>
+                <span class="d-block text-muted" style="font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;">CSR &amp; CSI platform</span>
+            </div>
+        </div>
+        <h1>Sign in</h1>
+        <p class="sub">Use the account issued by your IT administrator.</p>
+
+        <form asp-action="Login" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" autocomplete="username" autofocus />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label" style="font-size:.85rem;"></label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Sign in</button>
+        </form>
+
+        <p class="text-muted mt-3 mb-0" style="font-size:.78rem;">
+            Accounts are created by the IT administrator. Contact your administrator if you need access or a password reset.
+        </p>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

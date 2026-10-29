@@ -1,0 +1,73 @@
+@model Company
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Subtitle"] = "Company profile and CSR footprint";
+    bool isAdmin = User.IsInRole(Roles.Administrator);
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to companies</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit company</a>
+    @if (isAdmin)
+    {
+        <a class="btn btn-outline-danger ms-auto" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+    }
+</div>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><h2>Profile</h2></div>
+            <div class="card-body">
+                <dl class="detail-list">
+                    <dt>Industry</dt><dd>@Model.Industry</dd>
+                    <dt>Registration</dt><dd>@(Model.RegistrationNumber ?? "—")</dd>
+                    <dt>Website</dt><dd>@(Model.Website ?? "—")</dd>
+                    <dt>Email</dt><dd>@(Model.Email ?? "—")</dd>
+                    <dt>Phone</dt><dd>@(Model.Phone ?? "—")</dd>
+                    <dt>Head office</dt><dd>@(Model.HeadOffice ?? "—")</dd>
+                    <dt>Country</dt><dd>@(Model.Country?.Name ?? "—")</dd>
+                    <dt>Status</dt><dd>@(Model.IsActive ? "Active" : "Inactive")</dd>
+                </dl>
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <hr />
+                    <p class="mb-0" style="font-size:.9rem;">@Model.Description</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="kpi-grid" style="grid-template-columns:1fr;">
+            <div class="kpi">
+                <div class="label">Contributions received</div>
+                <div class="value">@(((decimal)ViewBag.DonationTotal).ToString("C0", Money.Zar))</div>
+                <div class="hint">Allocated and received donations</div>
+            </div>
+            <div class="kpi kpi-alt">
+                <div class="label">Activities</div>
+                <div class="value">@Model.Activities.Count</div>
+                <div class="hint">@Model.Activities.Count(a => a.Status == ActivityStatus.InProgress) in progress</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h2>Latest activities</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Activity</th><th>Status</th></tr></thead>
+                    <tbody>
+                    @foreach (var activity in Model.Activities.OrderByDescending(a => a.StartDate).Take(6))
+                    {
+                        <tr>
+                            <td><a asp-controller="Activities" asp-action="Details" asp-route-id="@activity.Id">@activity.Title</a></td>
+                            <td><span class="badge-status status-@activity.Status.ToString().ToLowerInvariant()">@activity.Status</span></td>
+                        </tr>
+                    }
+                    @if (Model.Activities.Count == 0)
+                    {
+                        <tr><td colspan="2" class="empty-state">No activities yet.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

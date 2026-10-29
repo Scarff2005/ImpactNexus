@@ -1,0 +1,14 @@
+@model Stakeholder
+@{
+    ViewData["Title"] = "Delete stakeholder";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete the stakeholder record for <strong>@Model.FullName</strong>?</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this stakeholder?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete stakeholder</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

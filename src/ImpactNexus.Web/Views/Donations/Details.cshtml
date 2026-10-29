@@ -1,0 +1,28 @@
+@model Donation
+@{
+    ViewData["Title"] = "Contribution details";
+    bool canManage = User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.CsrManager);
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    @if (canManage)
+    {
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-outline-danger ms-auto" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+    }
+</div>
+<div class="card">
+    <div class="card-body">
+        <dl class="detail-list">
+            <dt>Donor</dt><dd>@Model.DonorName</dd>
+            <dt>Amount</dt><dd>@Model.Amount.ToString("C2", Money.Zar)</dd>
+            <dt>Date</dt><dd>@Model.DonatedOn.ToString("dd MMM yyyy")</dd>
+            <dt>Status</dt><dd><span class="badge-status status-@Model.Status.ToString().ToLowerInvariant()">@Model.Status</span></dd>
+            <dt>Company</dt><dd>@Model.Company?.Name</dd>
+            <dt>Activity</dt><dd>@(Model.CsrActivity?.Title ?? "Unallocated")</dd>
+            <dt>Reference</dt><dd>@(Model.Reference ?? "—")</dd>
+            <dt>Description</dt><dd>@Model.Description</dd>
+            <dt>Recorded</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</dd>
+        </dl>
+    </div>
+</div>

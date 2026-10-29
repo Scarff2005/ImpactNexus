@@ -1,0 +1,58 @@
+@model PagedList<Donation>
+@{
+    ViewData["Title"] = User.IsInRole(Roles.Investor) ? "My contributions" : "Donations";
+    bool canManage = (bool)ViewBag.CanManage;
+}
+<div class="page-actions">
+    @if (canManage)
+    {
+        <a class="btn btn-primary" asp-action="Create">Record contribution</a>
+    }
+    <div class="ms-auto text-muted" style="font-size:.84rem;">Received / allocated total: <strong>@(((decimal)ViewBag.Total).ToString("C0", Money.Zar))</strong></div>
+</div>
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="filters mb-0">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Search donor or description" />
+            <select name="status" class="form-select form-select-sm">
+                <option value="">All statuses</option>
+                @foreach (var status in Enum.GetValues<DonationStatus>())
+                {
+                    <option value="@status" selected="@(ViewBag.Status as DonationStatus? == status)">@status</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Date</th><th>Donor</th><th>Company</th><th>Activity</th><th>Status</th><th class="text-end">Amount</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var donation in Model.Items)
+            {
+                <tr>
+                    <td>@donation.DonatedOn.ToString("dd MMM yyyy")</td>
+                    <td><a asp-action="Details" asp-route-id="@donation.Id">@donation.DonorName</a></td>
+                    <td>@donation.Company?.Name</td>
+                    <td>@(donation.CsrActivity?.Title ?? "Unallocated")</td>
+                    <td><span class="badge-status status-@donation.Status.ToString().ToLowerInvariant()">@donation.Status</span></td>
+                    <td class="text-end">@donation.Amount.ToString("C2", Money.Zar)</td>
+                    <td class="text-end">
+                        @if (canManage)
+                        {
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@donation.Id">Edit</a>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="7" class="empty-state"><strong>No contributions found</strong>Contributions appear here once recorded.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="PagerModel.From(Model)" />
+</div>

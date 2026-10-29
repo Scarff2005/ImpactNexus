@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Reports";
+    ViewData["Subtitle"] = "Filterable, database-backed impact reporting";
+    bool isStaff = User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.CsrManager);
+    bool isInvestor = User.IsInRole(Roles.Investor);
+    bool isCommunity = User.IsInRole(Roles.CommunityMember);
+}
+<div class="row g-3">
+    @if (isStaff || isInvestor)
+    {
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="section-title">CSR activity summary</h3>
+                    <p class="text-muted" style="font-size:.85rem;">Activities, budgets, statuses and impact indicators with date and company filters.</p>
+                    <a class="btn btn-sm btn-primary" asp-action="Activities">Open report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="section-title">Company contributions</h3>
+                    <p class="text-muted" style="font-size:.85rem;">Totals received per company with donation counts and last contribution dates.</p>
+                    <a class="btn btn-sm btn-primary" asp-action="Contributions">Open report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="section-title">Donation history</h3>
+                    <p class="text-muted" style="font-size:.85rem;">Individual contributions with donor, activity, status and reference.</p>
+                    <a class="btn btn-sm btn-primary" asp-action="Donations">Open report</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (isStaff || isInvestor || isCommunity)
+    {
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="section-title">Bursary summary</h3>
+                    <p class="text-muted" style="font-size:.85rem;">Applications, decisions and awarded amounts within your permitted scope.</p>
+                    <a class="btn btn-sm btn-primary" asp-action="Bursaries">Open report</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (isStaff || isCommunity)
+    {
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="section-title">Volunteer hours</h3>
+                    <p class="text-muted" style="font-size:.85rem;">Hours logged per volunteer and programme, with approval status.</p>
+                    <a class="btn btn-sm btn-primary" asp-action="VolunteerHours">Open report</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (isStaff)
+    {
+        <div class="col-md-6 col-xl-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="section-title">Beneficiary statistics</h3>
+                    <p class="text-muted" style="font-size:.85rem;">Beneficiary counts, approved bursaries and awarded totals by company.</p>
+                    <a class="btn btn-sm btn-primary" asp-action="Beneficiaries">Open report</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<p class="text-muted mt-4 mb-0" style="font-size:.8rem;">
+    All reports are generated from live database queries. CSV exports respect the same role and company restrictions as the screens.
+</p>

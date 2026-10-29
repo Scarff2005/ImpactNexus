@@ -1,0 +1,35 @@
+@model List<Country>
+@{
+    ViewData["Title"] = "Countries";
+}
+<div class="page-actions">
+    <a class="btn btn-primary" asp-action="Create">Add country</a>
+    <a class="btn btn-outline-secondary ms-auto" asp-controller="Provinces" asp-action="Index">Provinces</a>
+    <a class="btn btn-outline-secondary" asp-controller="Towns" asp-action="Index">Towns</a>
+    <a class="btn btn-outline-secondary" asp-controller="Locations" asp-action="Index">Locations</a>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Country</th><th>ISO</th><th>Provinces</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var country in Model)
+            {
+                <tr>
+                    <td>@country.Name</td>
+                    <td>@(country.IsoCode ?? "—")</td>
+                    <td>@country.Provinces.Count</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Provinces" asp-action="Index" asp-route-countryId="@country.Id">Provinces</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@country.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="4" class="empty-state">No countries recorded.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

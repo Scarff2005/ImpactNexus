@@ -1,0 +1,44 @@
+@model List<Town>
+@{
+    ViewData["Title"] = "Towns";
+    var provinces = (List<Province>)ViewBag.Provinces;
+}
+<div class="page-actions">
+    <a class="btn btn-primary" asp-action="Create">Add town</a>
+    <form method="get" class="filters mb-0 ms-auto">
+        <select name="provinceId" class="form-select form-select-sm">
+            <option value="">All provinces</option>
+            @foreach (var province in provinces)
+            {
+                <option value="@province.Id" selected="@(ViewBag.ProvinceId as int? == province.Id)">@province.Name (@province.Country?.Name)</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Town</th><th>Province</th><th>Country</th><th>Locations</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var town in Model)
+            {
+                <tr>
+                    <td>@town.Name</td>
+                    <td>@town.Province?.Name</td>
+                    <td>@town.Province?.Country?.Name</td>
+                    <td>@town.Locations.Count</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Locations" asp-action="Index" asp-route-townId="@town.Id">Locations</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@town.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="5" class="empty-state">No towns recorded.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

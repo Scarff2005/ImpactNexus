@@ -1,0 +1,159 @@
+﻿@using ImpactNexus.Web.Authorization
+@{
+    var roleLabel = User.IsInRole(Roles.Administrator) ? "IT Administrator"
+        : User.IsInRole(Roles.CsrManager) ? "CSR Manager"
+        : User.IsInRole(Roles.Investor) ? "Investor"
+        : User.IsInRole(Roles.CommunityMember) ? "Community Member"
+        : "Member";
+
+    var displayName = User.FindFirst(ImpactNexus.Web.Services.AppClaims.FullName)?.Value
+        ?? User.Identity?.Name ?? "Account";
+    var initials = string.Join("", displayName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2).Select(p => p[0])).ToUpperInvariant();
+
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    string Active(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · Impact Nexus</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="icon" href="~/favicon.ico" />
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" id="appSidebar">
+        <a class="brand" asp-controller="Dashboard" asp-action="Index">
+            <span class="brand-mark">IN</span>
+            <span class="brand-text"><strong>Impact Nexus</strong><span>CSR &amp; CSI platform</span></span>
+        </a>
+
+        <nav class="nav flex-column py-2">
+            <a class="nav-link @Active("Dashboard")" asp-controller="Dashboard" asp-action="Index">
+                <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/></svg>
+                Dashboard
+            </a>
+
+            @if (User.IsInRole(Roles.Administrator))
+            {
+                <div class="nav-section">Administration</div>
+                <a class="nav-link @Active("Users")" asp-controller="Users" asp-action="Index">
+                    <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+                    Users &amp; roles
+                </a>
+                <a class="nav-link @Active("Companies")" asp-controller="Companies" asp-action="Index">
+                    <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5V14H4V2.5zM3 14a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h1v11H3zm10 0h-1V3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1zM6 3h1v1H6V3zm3 0h1v1H9V3zM6 5h1v1H6V5zm3 0h1v1H9V5zM6 7h1v1H6V7zm3 0h1v1H9V7z"/></svg>
+                    Companies
+                </a>
+                <a class="nav-link @Active("Countries")" asp-controller="Countries" asp-action="Index">
+                    <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM4.5 7.5a.5.5 0 0 0 0 1h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 0 1 0v-1a.5.5 0 0 1 .5-.5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 0-1 0v1a.5.5 0 0 1-.5.5h-1z"/></svg>
+                    Locations
+                </a>
+            }
+
+            @if (User.IsInRole(Roles.CsrManager))
+            {
+                <div class="nav-section">Company workspace</div>
+                <a class="nav-link @Active("Companies")" asp-controller="Companies" asp-action="Index">My company</a>
+            }
+
+            @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.CsrManager))
+            {
+                <div class="nav-section">Programmes</div>
+                <a class="nav-link @Active("Activities")" asp-controller="Activities" asp-action="Index">CSR activities</a>
+                <a class="nav-link @Active("Donations")" asp-controller="Donations" asp-action="Index">Donations</a>
+                <a class="nav-link @Active("BursaryProgrammes")" asp-controller="BursaryProgrammes" asp-action="Index">Bursary programmes</a>
+                <a class="nav-link @Active("BursaryApplications")" asp-controller="BursaryApplications" asp-action="Index">Bursary applications</a>
+                <a class="nav-link @Active("VolunteerProgrammes")" asp-controller="VolunteerProgrammes" asp-action="Index">Volunteer programmes</a>
+                <a class="nav-link @Active("VolunteerHours")" asp-controller="VolunteerHours" asp-action="Index">Volunteer hours</a>
+                <a class="nav-link @Active("Stakeholders")" asp-controller="Stakeholders" asp-action="Index">Stakeholders</a>
+                <a class="nav-link @Active("Beneficiaries")" asp-controller="Beneficiaries" asp-action="Index">Beneficiaries</a>
+            }
+
+            @if (User.IsInRole(Roles.Investor))
+            {
+                <div class="nav-section">My impact</div>
+                <a class="nav-link @Active("Donations")" asp-controller="Donations" asp-action="Index">My contributions</a>
+                <a class="nav-link @Active("Reports")" asp-controller="Reports" asp-action="Index">Impact reports</a>
+            }
+
+            @if (User.IsInRole(Roles.CommunityMember))
+            {
+                <div class="nav-section">My participation</div>
+                <a class="nav-link @Active("VolunteerProgrammes")" asp-controller="VolunteerProgrammes" asp-action="Index">Volunteer programmes</a>
+                <a class="nav-link @Active("VolunteerHours")" asp-controller="VolunteerHours" asp-action="Index">My volunteer hours</a>
+                <a class="nav-link @Active("BursaryApplications")" asp-controller="BursaryApplications" asp-action="Index">My bursary applications</a>
+                <a class="nav-link @Active("Reports")" asp-controller="Reports" asp-action="Index">My reports</a>
+            }
+
+            @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.CsrManager))
+            {
+                <div class="nav-section">Insight</div>
+                <a class="nav-link @Active("Reports")" asp-controller="Reports" asp-action="Index">Reports &amp; exports</a>
+            }
+
+            <div class="nav-section">Account</div>
+            <a class="nav-link @Active("Account")" asp-controller="Account" asp-action="Profile">My profile</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            Role: @roleLabel<br />
+            Signed in as @User.Identity?.Name
+        </div>
+    </aside>
+
+    <div class="content-wrap">
+        <header class="topbar">
+            <button class="btn btn-sm btn-outline-secondary mobile-toggle" id="sidebarToggle" type="button" aria-label="Toggle navigation">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>
+            </button>
+            <div class="page-heading">
+                <h1>@(ViewData["Title"] ?? "Dashboard")</h1>
+                @if (ViewData["Subtitle"] is string subtitle)
+                {
+                    <div class="crumbs">@subtitle</div>
+                }
+            </div>
+            <div class="user-chip">
+                <span class="avatar">@initials</span>
+                <span class="user-meta d-none d-sm-block">
+                    <strong>@displayName</strong>
+                    <span>@roleLabel</span>
+                </span>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Menu</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">My profile</a></li>
+                        <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Change password</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="dropdown-item">Sign out</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <partial name="_StatusMessages" />
+            @RenderBody()
+        </main>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,40 @@
+@model BursaryApplication
+@{
+    ViewData["Title"] = "Apply for a bursary";
+    var programmes = (List<BursaryProgramme>)ViewBag.Programmes;
+}
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><h2>Application</h2></div>
+            <div class="card-body">
+                @if (programmes.Count == 0)
+                {
+                    <p class="text-muted mb-0">There are no open bursary programmes at the moment.</p>
+                }
+                else
+                {
+                    <form asp-action="Apply" method="post">
+                        <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+                        <div class="mb-3">
+                            <label class="form-label" for="bursaryProgrammeId">Programme</label>
+                            <select class="form-select" id="bursaryProgrammeId" name="bursaryProgrammeId">
+                                @foreach (var programme in programmes)
+                                {
+                                    <option value="@programme.Id">@programme.Name · @programme.Company?.Name (closes @programme.CloseDate.ToString("dd MMM yyyy"))</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="motivation">Motivation</label>
+                            <textarea class="form-control" id="motivation" name="motivation" rows="6" placeholder="Explain your academic performance, financial need and what this bursary would enable."></textarea>
+                            <div class="form-text">Minimum 20 characters. Only authorised staff at the company will see your application.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit application</button>
+                        <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>

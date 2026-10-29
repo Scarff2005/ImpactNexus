@@ -1,0 +1,52 @@
+@model List<BeneficiaryStatsRow>
+@{
+    ViewData["Title"] = "Beneficiary statistics";
+    var filters = (ReportFilters)ViewBag.Filters;
+    var companies = (List<Company>)ViewBag.Companies;
+    var route = new Dictionary<string, string?>
+    {
+        ["companyId"] = filters.CompanyId?.ToString(),
+        ["export"] = "true"
+    };
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Reports</a>
+    <div class="ms-auto text-muted" style="font-size:.84rem;">Beneficiaries <strong>@(((int)ViewBag.TotalBeneficiaries).ToString("N0"))</strong></div>
+</div>
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="filters mb-0">
+            <select name="companyId" class="form-select form-select-sm">
+                <option value="">All companies</option>
+                @foreach (var company in companies)
+                {
+                    <option value="@company.Id" selected="@(filters.CompanyId == company.Id)">@company.Name</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+            <a class="btn btn-sm btn-outline-secondary" asp-action="Beneficiaries" asp-all-route-data="route">Export CSV</a>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Company</th><th class="text-end">Beneficiaries</th><th class="text-end">Approved bursaries</th><th class="text-end">Awarded total</th></tr></thead>
+            <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td>@row.Company</td>
+                    <td class="text-end">@row.BeneficiaryCount</td>
+                    <td class="text-end">@row.ApprovedBursaries</td>
+                    <td class="text-end">@row.AwardedTotal.ToString("C2", Money.Zar)</td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="4" class="empty-state">No beneficiary records match the selected filters.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

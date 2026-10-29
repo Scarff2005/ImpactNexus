@@ -1,0 +1,14 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = "Delete user";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete the account <strong>@Model.FullName (@Model.Email)</strong>? Accounts with linked records cannot be deleted; disable them instead.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this user account?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete account</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

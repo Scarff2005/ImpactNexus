@@ -1,0 +1,67 @@
+@model UserCreateViewModel
+@{
+    ViewData["Title"] = "Create user";
+    var companies = (List<Company>)ViewBag.Companies;
+    var roleList = (string[])ViewBag.RoleList;
+}
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                    <div class="form-text">Minimum 8 characters with upper case, lower case, a digit and a symbol.</div>
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Role" class="form-label"></label>
+                    <select asp-for="Role" class="form-select">
+                        <option value="">Select a role</option>
+                        @foreach (var role in roleList)
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Role" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CompanyId" class="form-label"></label>
+                    <select asp-for="CompanyId" class="form-select">
+                        <option value="">No company (administrators and investors)</option>
+                        @foreach (var company in companies)
+                        {
+                            <option value="@company.Id">@company.Name</option>
+                        }
+                    </select>
+                    <div class="form-text">Required for CSR Managers: this controls which company records they can access.</div>
+                    <span asp-validation-for="CompanyId" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-4">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Create account</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

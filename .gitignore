@@ -1,0 +1,58 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio, Rider, VS Code
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Test artefacts
+[Tt]est[Rr]esults/
+*.trx
+*.coverage
+*.coveragexml
+coverage*.xml
+
+# Publish output
+publish/
+*.publishsettings
+
+# Local database files (the test suite creates its SQLite file in the temp folder)
+*.mdf
+*.ldf
+*.ndf
+*.db
+*.db-shm
+*.db-wal
+
+# Logs and crash dumps
+*.log
+*.dmp
+
+# OS noise
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Local machine overrides that must never be committed
+appsettings.Local.json
+*.secrets.json
+
+# Generated submission documents: rebuilt from docs/DOCUMENTATION.md, kept in the
+# submission folder rather than the repository
+docs/*.docx
+docs/*.pptx
+
+# The documentation folder itself is submitted with the written pack, not tracked here
+docs/
+
+# Vendor source maps: development-only, about 6 MB, never served to a user
+*.map

@@ -1,0 +1,43 @@
+@model List<Province>
+@{
+    ViewData["Title"] = "Provinces";
+    var countries = (List<Country>)ViewBag.Countries;
+}
+<div class="page-actions">
+    <a class="btn btn-primary" asp-action="Create">Add province</a>
+    <form method="get" class="filters mb-0 ms-auto">
+        <select name="countryId" class="form-select form-select-sm">
+            <option value="">All countries</option>
+            @foreach (var country in countries)
+            {
+                <option value="@country.Id" selected="@(ViewBag.CountryId as int? == country.Id)">@country.Name</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Province</th><th>Country</th><th>Towns</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var province in Model)
+            {
+                <tr>
+                    <td>@province.Name</td>
+                    <td>@province.Country?.Name</td>
+                    <td>@province.Towns.Count</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Towns" asp-action="Index" asp-route-provinceId="@province.Id">Towns</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@province.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="4" class="empty-state">No provinces recorded.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

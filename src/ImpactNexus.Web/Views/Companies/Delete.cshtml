@@ -1,0 +1,14 @@
+@model Company
+@{
+    ViewData["Title"] = "Delete company";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete <strong>@Model.Name</strong>? Companies with activities, donations, programmes or linked users cannot be deleted.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this company?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete company</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+@model PagedList<BursaryApplication>
+@{
+    ViewData["Title"] = "Bursary applications";
+    bool canManage = (bool)ViewBag.CanManage;
+    bool canApply = (bool)ViewBag.CanApply;
+}
+<div class="page-actions">
+    @if (canApply)
+    {
+        <a class="btn btn-primary" asp-action="Apply">Apply for a bursary</a>
+    }
+    @if (canManage)
+    {
+        <a class="btn btn-outline-primary" asp-action="Create">Capture application</a>
+    }
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Applicant</th><th>Programme</th><th>Company</th><th>Applied</th><th>Status</th><th class="text-end">Awarded</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var application in Model.Items)
+            {
+                <tr>
+                    <td>@application.Beneficiary?.FullName</td>
+                    <td>@application.BursaryProgramme?.Name</td>
+                    <td>@application.BursaryProgramme?.Company?.Name</td>
+                    <td>@application.AppliedOn.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge-status status-@application.Status.ToString().ToLowerInvariant()">@application.Status</span></td>
+                    <td class="text-end">@(application.AmountAwarded?.ToString("C0", Money.Zar) ?? "—")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@application.Id">Open</a>
+                        @if (canManage)
+                        {
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@application.Id">Review</a>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="7" class="empty-state"><strong>No applications</strong>Applications will appear here once captured.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="PagerModel.From(Model)" />
+</div>

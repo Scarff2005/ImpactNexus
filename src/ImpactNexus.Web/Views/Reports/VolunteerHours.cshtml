@@ -1,0 +1,67 @@
+@model List<VolunteerHoursReportRow>
+@{
+    ViewData["Title"] = "Volunteer hours report";
+    var filters = (ReportFilters)ViewBag.Filters;
+    var companies = (List<Company>)ViewBag.Companies;
+    var route = new Dictionary<string, string?>
+    {
+        ["from"] = filters.From?.ToString("yyyy-MM-dd"),
+        ["to"] = filters.To?.ToString("yyyy-MM-dd"),
+        ["companyId"] = filters.CompanyId?.ToString(),
+        ["search"] = filters.Search,
+        ["export"] = "true"
+    };
+    bool showFilters = !User.IsInRole(Roles.CommunityMember);
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Reports</a>
+    <div class="ms-auto text-muted" style="font-size:.84rem;">
+        Total <strong>@(((decimal)ViewBag.TotalHours).ToString("N1"))</strong> h ·
+        approved <strong>@(((decimal)ViewBag.ApprovedHours).ToString("N1"))</strong> h
+    </div>
+</div>
+@if (showFilters)
+{
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form method="get" class="filters mb-0">
+                <input type="date" name="from" value="@filters.From?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" aria-label="From date" />
+                <input type="date" name="to" value="@filters.To?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" aria-label="To date" />
+                <select name="companyId" class="form-select form-select-sm">
+                    <option value="">All companies</option>
+                    @foreach (var company in companies)
+                    {
+                        <option value="@company.Id" selected="@(filters.CompanyId == company.Id)">@company.Name</option>
+                    }
+                </select>
+                <input type="text" name="search" value="@filters.Search" class="form-control form-control-sm" placeholder="Volunteer or programme" />
+                <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+                <a class="btn btn-sm btn-outline-secondary" asp-action="VolunteerHours" asp-all-route-data="route">Export CSV</a>
+            </form>
+        </div>
+    </div>
+}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Volunteer</th><th>Programme</th><th>Company</th><th>Date</th><th class="text-end">Hours</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td>@row.Volunteer</td>
+                    <td>@row.Programme</td>
+                    <td>@row.Company</td>
+                    <td>@row.Date.ToString("dd MMM yyyy")</td>
+                    <td class="text-end">@row.Hours.ToString("N1")</td>
+                    <td><span class="badge-status @(row.Approved ? "status-approved" : "status-submitted")">@(row.Approved ? "Approved" : "Pending")</span></td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="6" class="empty-state">No volunteer hours match the selected filters.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

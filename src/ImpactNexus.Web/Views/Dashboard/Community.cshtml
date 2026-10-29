@@ -1,0 +1,152 @@
+@model CommunityDashboardViewModel
+@{
+    ViewData["Title"] = "My participation";
+    ViewData["Subtitle"] = "Volunteer activity, programmes and bursary records";
+    var maxMonthly = Model.MonthlyHours.Count == 0 ? 1m : Math.Max(1m, Model.MonthlyHours.Max(m => m.Amount));
+}
+<div class="kpi-grid">
+    <div class="kpi">
+        <div class="label">Total volunteer hours</div>
+        <div class="value">@Model.TotalHours.ToString("N1")</div>
+        <div class="hint">@Model.ApprovedHours.ToString("N1") approved</div>
+    </div>
+    <div class="kpi kpi-warn">
+        <div class="label">Awaiting approval</div>
+        <div class="value">@Model.PendingHours.ToString("N1")</div>
+        <div class="hint">Hours submitted but not yet verified</div>
+    </div>
+    <div class="kpi kpi-alt">
+        <div class="label">Programmes joined</div>
+        <div class="value">@Model.ProgrammeCount</div>
+        <div class="hint">Programmes with logged hours</div>
+    </div>
+    <div class="kpi kpi-rose">
+        <div class="label">Bursary applications</div>
+        <div class="value">@Model.BursaryApplications.Count</div>
+        <div class="hint">Applications recorded against your account</div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card mb-4">
+            <div class="card-header"><h2>Your volunteer hours, last six months</h2></div>
+            <div class="card-body">
+                <div class="spark-wrap">
+                    <div class="spark">
+                        @foreach (var point in Model.MonthlyHours)
+                        {
+                            var height = Math.Max(4, (int)(point.Amount / maxMonthly * 100));
+                            <div class="bar" style="height:@height%" title="@point.Label: @point.Amount.ToString("N1") hours">
+                                <span>@point.Label</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Recent volunteer hours</h2>
+                <a class="btn btn-sm btn-primary" asp-controller="VolunteerHours" asp-action="Log">Log hours</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead><tr><th>Date</th><th>Programme</th><th>Hours</th><th>Status</th></tr></thead>
+                    <tbody>
+                    @foreach (var hour in Model.RecentHours)
+                    {
+                        <tr>
+                            <td>@hour.Date.ToString("dd MMM yyyy")</td>
+                            <td>@hour.VolunteerProgramme?.Name</td>
+                            <td>@hour.Hours.ToString("N1")</td>
+                            <td>
+                                <span class="badge-status @(hour.Approved ? "status-approved" : "status-submitted")">
+                                    @(hour.Approved ? "Approved" : "Pending")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.RecentHours.Count == 0)
+                    {
+                        <tr><td colspan="4" class="empty-state">No volunteer hours logged yet.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>My activities</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Activity</th><th>Company</th><th>Location</th><th>Status</th></tr></thead>
+                    <tbody>
+                    @foreach (var activity in Model.Activities)
+                    {
+                        <tr>
+                            <td>@activity.Title</td>
+                            <td>@activity.Company?.Name</td>
+                            <td>@activity.Location?.Name</td>
+                            <td><span class="badge-status status-@activity.Status.ToString().ToLowerInvariant()">@activity.Status</span></td>
+                        </tr>
+                    }
+                    @if (Model.Activities.Count == 0)
+                    {
+                        <tr><td colspan="4" class="empty-state">Activities will appear once you log hours against a programme.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card mb-4">
+            <div class="card-header"><h2>Bursary records</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Programme</th><th>Status</th><th class="text-end">Awarded</th></tr></thead>
+                    <tbody>
+                    @foreach (var application in Model.BursaryApplications)
+                    {
+                        <tr>
+                            <td>@application.BursaryProgramme?.Name</td>
+                            <td><span class="badge-status status-@application.Status.ToString().ToLowerInvariant()">@application.Status</span></td>
+                            <td class="text-end">@(application.AmountAwarded?.ToString("C0", Money.Zar) ?? "—")</td>
+                        </tr>
+                    }
+                    @if (Model.BursaryApplications.Count == 0)
+                    {
+                        <tr><td colspan="3" class="empty-state">No bursary applications on record.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Programmes</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Programme</th><th>Company</th><th>Status</th></tr></thead>
+                    <tbody>
+                    @foreach (var programme in Model.Programmes)
+                    {
+                        <tr>
+                            <td><a asp-controller="VolunteerProgrammes" asp-action="Details" asp-route-id="@programme.Id">@programme.Name</a></td>
+                            <td>@programme.Company?.Name</td>
+                            <td><span class="badge-status status-@programme.Status.ToString().ToLowerInvariant()">@programme.Status</span></td>
+                        </tr>
+                    }
+                    @if (Model.Programmes.Count == 0)
+                    {
+                        <tr><td colspan="3" class="empty-state">No volunteer programmes available.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

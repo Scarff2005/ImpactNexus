@@ -1,0 +1,14 @@
+@model Beneficiary
+@{
+    ViewData["Title"] = "Delete beneficiary";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete the beneficiary record for <strong>@Model.FullName</strong>? Records with bursary applications cannot be deleted.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this beneficiary record?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete beneficiary</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+@model PagerModel
+@{
+    var routeData = ViewContext.RouteData.Values;
+    string? controller = routeData["controller"]?.ToString();
+    string? action = routeData["action"]?.ToString();
+
+    Dictionary<string, string> RouteFor(int target)
+    {
+        var query = Context.Request.Query
+            .Where(q => !string.Equals(q.Key, "page", StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(q => q.Key, q => q.Value.ToString());
+        query["page"] = target.ToString();
+        return query;
+    }
+}
+@if (Model.TotalCount > 0)
+{
+    <div class="pager">
+        <div>Showing page @Model.Page of @Model.TotalPages · @Model.TotalCount record@(Model.TotalCount == 1 ? "" : "s")</div>
+        <div class="pages">
+            <a class="btn btn-sm btn-outline-secondary @(Model.HasPrevious ? "" : "disabled")"
+               asp-controller="@controller" asp-action="@action" asp-all-route-data="RouteFor(Model.Page - 1)">Previous</a>
+            <a class="btn btn-sm btn-outline-secondary @(Model.HasNext ? "" : "disabled")"
+               asp-controller="@controller" asp-action="@action" asp-all-route-data="RouteFor(Model.Page + 1)">Next</a>
+        </div>
+    </div>
+}

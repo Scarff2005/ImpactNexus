@@ -1,0 +1,14 @@
+@model CsrActivity
+@{
+    ViewData["Title"] = "Delete activity";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete <strong>@Model.Title</strong>? Activities with linked donations or volunteer hours cannot be deleted.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this activity?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete activity</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

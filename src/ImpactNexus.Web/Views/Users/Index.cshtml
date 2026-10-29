@@ -1,0 +1,60 @@
+@model PagedList<ApplicationUser>
+@{
+    ViewData["Title"] = "Users & roles";
+    var roles = (Dictionary<string, string>)ViewBag.Roles;
+}
+<div class="page-actions">
+    <a class="btn btn-primary" asp-action="Create">Create user</a>
+    <form method="get" class="filters mb-0 ms-auto">
+        <div class="form-group">
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Search name or email" />
+        </div>
+        <div class="form-group">
+            <select name="active" class="form-select form-select-sm">
+                <option value="">All accounts</option>
+                <option value="true" selected="@(ViewBag.Active as bool? == true)">Active</option>
+                <option value="false" selected="@(ViewBag.Active as bool? == false)">Disabled</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr><th>Name</th><th>Email</th><th>Role</th><th>Company</th><th>Status</th><th class="text-end">Actions</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model.Items)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@user.Id">@user.FullName</a></td>
+                    <td>@user.Email</td>
+                    <td>@(roles.TryGetValue(user.Id, out var r) ? r : "—")</td>
+                    <td>@(user.Company?.Name ?? "—")</td>
+                    <td>
+                        <span class="badge-status @(user.IsActive ? "status-approved" : "status-rejected")">
+                            @(user.IsActive ? "Active" : "Disabled")
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="ResetPassword" asp-route-id="@user.Id">Reset password</a>
+                        <form asp-action="ToggleActive" asp-route-id="@user.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">@(user.IsActive ? "Disable" : "Enable")</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="6" class="empty-state"><strong>No accounts found</strong>Adjust the filters or create a new user.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="PagerModel.From(Model)" />
+</div>

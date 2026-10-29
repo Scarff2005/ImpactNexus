@@ -1,0 +1,132 @@
+@model InvestorDashboardViewModel
+@{
+    ViewData["Title"] = "My impact dashboard";
+    ViewData["Subtitle"] = "Your contributions and the work they funded";
+    var maxMonthly = Model.MonthlyContributions.Count == 0 ? 1m : Math.Max(1m, Model.MonthlyContributions.Max(m => m.Amount));
+}
+<div class="kpi-grid">
+    <div class="kpi">
+        <div class="label">Total contributed</div>
+        <div class="value">@Model.TotalContributed.ToString("C0", Money.Zar)</div>
+        <div class="hint">Across @Model.DonationCount contribution record(s)</div>
+    </div>
+    <div class="kpi kpi-alt">
+        <div class="label">Activities funded</div>
+        <div class="value">@Model.FundedActivityCount</div>
+        <div class="hint">Projects linked to your contributions</div>
+    </div>
+    <div class="kpi kpi-warn">
+        <div class="label">Last contribution</div>
+        <div class="value">@(Model.LastDonationOn?.ToString("dd MMM yyyy") ?? "—")</div>
+        <div class="hint">Most recent recorded date</div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card mb-4">
+            <div class="card-header"><h2>Your contributions, last six months</h2></div>
+            <div class="card-body">
+                <div class="spark-wrap">
+                    <div class="spark">
+                        @foreach (var point in Model.MonthlyContributions)
+                        {
+                            var height = Math.Max(4, (int)(point.Amount / maxMonthly * 100));
+                            <div class="bar" style="height:@height%" title="@point.Label: @point.Amount.ToString("C0", Money.Zar)">
+                                <span>@point.Label</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header"><h2>Funded activities</h2></div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead><tr><th>Activity</th><th>Company</th><th>Status</th><th class="text-end">Budget</th></tr></thead>
+                    <tbody>
+                    @foreach (var activity in Model.FundedActivities)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Reports" asp-action="Activities">@activity.Title</a>
+                                <div class="text-muted" style="font-size:.74rem;">@activity.Location?.Name</div>
+                            </td>
+                            <td>@activity.Company?.Name</td>
+                            <td><span class="badge-status status-@activity.Status.ToString().ToLowerInvariant()">@activity.Status</span></td>
+                            <td class="text-end">@activity.Budget.ToString("C0", Money.Zar)</td>
+                        </tr>
+                    }
+                    @if (Model.FundedActivities.Count == 0)
+                    {
+                        <tr><td colspan="4" class="empty-state">No activities are linked to your contributions yet.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Recent contributions</h2>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Donations" asp-action="Index">View all</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Date</th><th>Company</th><th>Activity</th><th>Status</th><th class="text-end">Amount</th></tr></thead>
+                    <tbody>
+                    @foreach (var donation in Model.RecentDonations)
+                    {
+                        <tr>
+                            <td>@donation.DonatedOn.ToString("dd MMM yyyy")</td>
+                            <td>@donation.Company?.Name</td>
+                            <td>@(donation.CsrActivity?.Title ?? "Unallocated")</td>
+                            <td><span class="badge-status status-@donation.Status.ToString().ToLowerInvariant()">@donation.Status</span></td>
+                            <td class="text-end">@donation.Amount.ToString("C0", Money.Zar)</td>
+                        </tr>
+                    }
+                    @if (Model.RecentDonations.Count == 0)
+                    {
+                        <tr><td colspan="5" class="empty-state">No contributions recorded against your account.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card mb-4">
+            <div class="card-header"><h2>Contribution by company</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Company</th><th>Activities</th><th class="text-end">Contributed</th></tr></thead>
+                    <tbody>
+                    @foreach (var row in Model.CompanyBreakdown)
+                    {
+                        <tr>
+                            <td>@row.CompanyName</td>
+                            <td>@row.ActivityCount</td>
+                            <td class="text-end">@row.ContributionTotal.ToString("C0", Money.Zar)</td>
+                        </tr>
+                    }
+                    @if (Model.CompanyBreakdown.Count == 0)
+                    {
+                        <tr><td colspan="3" class="empty-state">No company breakdown available.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body d-grid gap-2">
+                <a class="btn btn-primary" asp-controller="Reports" asp-action="Donations">My donation history</a>
+                <a class="btn btn-outline-primary" asp-controller="Reports" asp-action="Bursaries">Bursary impact summary</a>
+                <a class="btn btn-outline-secondary" asp-controller="Reports" asp-action="Contributions">My contribution report</a>
+            </div>
+        </div>
+    </div>
+</div>

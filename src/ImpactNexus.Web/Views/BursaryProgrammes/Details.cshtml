@@ -1,0 +1,60 @@
+@model BursaryProgramme
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Subtitle"] = Model.Company?.Name + " · bursary programme";
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-outline-danger ms-auto" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+</div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header"><h2>Programme</h2></div>
+            <div class="card-body">
+                <dl class="detail-list">
+                    <dt>Company</dt><dd>@Model.Company?.Name</dd>
+                    <dt>Academic year</dt><dd>@Model.AcademicYear</dd>
+                    <dt>Budget</dt><dd>@Model.Budget.ToString("C0", Money.Zar)</dd>
+                    <dt>Opens</dt><dd>@Model.OpenDate.ToString("dd MMM yyyy")</dd>
+                    <dt>Closes</dt><dd>@Model.CloseDate.ToString("dd MMM yyyy")</dd>
+                    <dt>Status</dt><dd>@(Model.IsAcceptingApplications ? "Accepting applications" : Model.IsActive ? "Active — window closed" : "Inactive")</dd>
+                    <dt>Awarded</dt><dd>@(((decimal)ViewBag.Awarded).ToString("C0", Money.Zar))</dd>
+                </dl>
+                <p class="mt-3 mb-0" style="font-size:.88rem;">@Model.Description</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Applications</h2>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="BursaryApplications" asp-action="Create">Capture application</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead><tr><th>Applicant</th><th>Applied</th><th>Status</th><th class="text-end">Awarded</th><th></th></tr></thead>
+                    <tbody>
+                    @foreach (var application in Model.Applications.OrderByDescending(a => a.AppliedOn))
+                    {
+                        <tr>
+                            <td>@application.Beneficiary?.FullName</td>
+                            <td>@application.AppliedOn.ToString("dd MMM yyyy")</td>
+                            <td><span class="badge-status status-@application.Status.ToString().ToLowerInvariant()">@application.Status</span></td>
+                            <td class="text-end">@(application.AmountAwarded?.ToString("C0", Money.Zar) ?? "—")</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary" asp-controller="BursaryApplications" asp-action="Details" asp-route-id="@application.Id">Open</a>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Applications.Count == 0)
+                    {
+                        <tr><td colspan="5" class="empty-state">No applications yet.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

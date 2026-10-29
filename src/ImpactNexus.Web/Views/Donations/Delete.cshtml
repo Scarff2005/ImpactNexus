@@ -1,0 +1,14 @@
+@model Donation
+@{
+    ViewData["Title"] = "Delete contribution";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete the contribution of <strong>@Model.Amount.ToString("C2", Money.Zar)</strong> from <strong>@Model.DonorName</strong> dated @Model.DonatedOn.ToString("dd MMM yyyy")?</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this financial record?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete contribution</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

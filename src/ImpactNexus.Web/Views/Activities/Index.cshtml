@@ -1,0 +1,45 @@
+@model PagedList<CsrActivity>
+@{
+    ViewData["Title"] = "CSR activities";
+}
+<div class="page-actions">
+    <a class="btn btn-primary" asp-action="Create">New activity</a>
+    <form method="get" class="filters mb-0 ms-auto">
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Search title or description" />
+        <select name="status" class="form-select form-select-sm">
+            <option value="">All statuses</option>
+            @foreach (var status in Enum.GetValues<ActivityStatus>())
+            {
+                <option value="@status" selected="@(ViewBag.Status as ActivityStatus? == status)">@status</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr><th>Activity</th><th>Company</th><th>Location</th><th>Period</th><th>Status</th><th class="text-end">Budget</th></tr>
+            </thead>
+            <tbody>
+            @foreach (var activity in Model.Items)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@activity.Id">@activity.Title</a></td>
+                    <td>@activity.Company?.Name</td>
+                    <td>@(activity.Location?.Name ?? "—")</td>
+                    <td>@activity.StartDate.ToString("dd MMM yyyy")@(activity.EndDate.HasValue ? " – " + activity.EndDate.Value.ToString("dd MMM yyyy") : "")</td>
+                    <td><span class="badge-status status-@activity.Status.ToString().ToLowerInvariant()">@activity.Status</span></td>
+                    <td class="text-end">@activity.Budget.ToString("C0", Money.Zar)</td>
+                </tr>
+            }
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="6" class="empty-state"><strong>No activities found</strong>Create the first CSR activity.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="PagerModel.From(Model)" />
+</div>

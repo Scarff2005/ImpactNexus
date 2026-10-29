@@ -1,0 +1,14 @@
+@model BursaryApplication
+@{
+    ViewData["Title"] = "Delete application";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete the application from <strong>@Model.Beneficiary?.FullName</strong> for <strong>@Model.BursaryProgramme?.Name</strong>?</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this application?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete application</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

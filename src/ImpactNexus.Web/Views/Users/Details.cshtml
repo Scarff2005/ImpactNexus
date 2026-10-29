@@ -1,0 +1,22 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = "User details";
+    var roles = (IList<string>)ViewBag.Roles;
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to users</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit account</a>
+</div>
+<div class="card">
+    <div class="card-body">
+        <dl class="detail-list">
+            <dt>Full name</dt><dd>@Model.FullName</dd>
+            <dt>Email</dt><dd>@Model.Email</dd>
+            <dt>Phone</dt><dd>@(Model.PhoneNumber ?? "—")</dd>
+            <dt>Role</dt><dd>@string.Join(", ", roles)</dd>
+            <dt>Company</dt><dd>@(Model.Company?.Name ?? "Not linked")</dd>
+            <dt>Status</dt><dd>@(Model.IsActive ? "Active" : "Disabled")</dd>
+            <dt>Created</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</dd>
+        </dl>
+    </div>
+</div>

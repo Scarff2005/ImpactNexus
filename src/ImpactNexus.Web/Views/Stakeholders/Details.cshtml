@@ -1,0 +1,50 @@
+@model Stakeholder
+@{
+    ViewData["Title"] = Model.FullName;
+    ViewData["Subtitle"] = "Stakeholder record";
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-outline-danger ms-auto" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+</div>
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h2>Contact</h2></div>
+            <div class="card-body">
+                <dl class="detail-list">
+                    <dt>Type</dt><dd>@Model.Type</dd>
+                    <dt>Email</dt><dd>@(Model.Email ?? "—")</dd>
+                    <dt>Phone</dt><dd>@(Model.Phone ?? "—")</dd>
+                    <dt>Company</dt><dd>@(Model.Company?.Name ?? "—")</dd>
+                    <dt>Linked account</dt><dd>@(Model.User?.Email ?? "—")</dd>
+                    <dt>Notes</dt><dd>@(Model.Notes ?? "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header"><h2>Linked beneficiaries</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Name</th><th>Applications</th></tr></thead>
+                    <tbody>
+                    @foreach (var beneficiary in Model.Beneficiaries)
+                    {
+                        <tr>
+                            <td><a asp-controller="Beneficiaries" asp-action="Details" asp-route-id="@beneficiary.Id">@beneficiary.FullName</a></td>
+                            <td>@beneficiary.Applications.Count</td>
+                        </tr>
+                    }
+                    @if (Model.Beneficiaries.Count == 0)
+                    {
+                        <tr><td colspan="2" class="empty-state">No beneficiary records linked.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

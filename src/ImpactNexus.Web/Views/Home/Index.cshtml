@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impact Nexus · CSR & CSI management</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="landing">
+    <header class="landing-hero">
+        <div class="container">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <span class="brand-mark">IN</span>
+                <strong class="text-white">Impact Nexus</strong>
+            </div>
+            <h1>Measure corporate impact without losing the people inside it.</h1>
+            <p class="mt-3 mb-4">
+                Impact Nexus connects automobile companies, donors, community partners and volunteers around
+                a single, auditable record of CSR and CSI activity — budgets, beneficiaries, bursaries,
+                volunteer hours and contribution outcomes in one place.
+            </p>
+            <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="Login">Sign in</a>
+        </div>
+    </header>
+
+    <section class="container py-5">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="landing-feature">
+                    <h3>Programme tracking</h3>
+                    <p>Plan activities with objectives, budgets, locations and impact indicators, then track delivery status over time.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="landing-feature">
+                    <h3>Contribution transparency</h3>
+                    <p>Corporate and investor contributions are linked to activities, giving donors a clear view of what their funding supported.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="landing-feature">
+                    <h3>Beneficiary and volunteer records</h3>
+                    <p>Bursary outcomes, beneficiary statistics and verified volunteer hours, scoped to the people authorised to see them.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3 mt-1">
+            <div class="col-md-4">
+                <div class="landing-feature">
+                    <h3>Role-based access</h3>
+                    <p>Administrators, CSR managers, investors and community members each see a different workspace and dataset.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="landing-feature">
+                    <h3>Reporting and exports</h3>
+                    <p>Filter by date, company and status, then export activity, contribution, bursary and volunteer reports to CSV.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="landing-feature">
+                    <h3>GRI and King IV alignment</h3>
+                    <p>Indicators and reporting follow GRI and King IV concepts. Formal compliance requires additional verification and governance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <div class="container d-flex flex-wrap justify-content-between gap-2">
+            <span>Impact Nexus · Corporate Social Responsibility management</span>
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+</body>
+</html>

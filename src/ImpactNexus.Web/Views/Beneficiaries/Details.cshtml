@@ -1,0 +1,51 @@
+@model Beneficiary
+@{
+    ViewData["Title"] = Model.FullName;
+    ViewData["Subtitle"] = "Beneficiary record";
+}
+<div class="page-actions">
+    <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-outline-danger ms-auto" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+</div>
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><h2>Details</h2></div>
+            <div class="card-body">
+                <dl class="detail-list">
+                    <dt>Email</dt><dd>@(Model.Email ?? "—")</dd>
+                    <dt>Phone</dt><dd>@(Model.Phone ?? "—")</dd>
+                    <dt>Town</dt><dd>@(Model.Town?.Name ?? "—")</dd>
+                    <dt>Company</dt><dd>@(Model.Company?.Name ?? "—")</dd>
+                    <dt>Notes</dt><dd>@(Model.Notes ?? "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><h2>Bursary applications</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Programme</th><th>Year</th><th>Status</th><th class="text-end">Awarded</th></tr></thead>
+                    <tbody>
+                    @foreach (var application in Model.Applications.OrderByDescending(a => a.AppliedOn))
+                    {
+                        <tr>
+                            <td><a asp-controller="BursaryApplications" asp-action="Details" asp-route-id="@application.Id">@application.BursaryProgramme?.Name</a></td>
+                            <td>@application.BursaryProgramme?.AcademicYear</td>
+                            <td><span class="badge-status status-@application.Status.ToString().ToLowerInvariant()">@application.Status</span></td>
+                            <td class="text-end">@(application.AmountAwarded?.ToString("C0", Money.Zar) ?? "—")</td>
+                        </tr>
+                    }
+                    @if (Model.Applications.Count == 0)
+                    {
+                        <tr><td colspan="4" class="empty-state">No bursary applications recorded.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

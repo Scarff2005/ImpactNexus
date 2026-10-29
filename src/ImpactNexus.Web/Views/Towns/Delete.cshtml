@@ -1,0 +1,14 @@
+@model Town
+@{
+    ViewData["Title"] = "Delete town";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete <strong>@Model.Name</strong>? Towns with locations cannot be deleted.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this town?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete town</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

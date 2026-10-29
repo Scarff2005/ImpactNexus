@@ -1,0 +1,14 @@
+@model Country
+@{
+    ViewData["Title"] = "Delete country";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete <strong>@Model.Name</strong>? Countries with provinces or linked companies cannot be deleted.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this country?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete country</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

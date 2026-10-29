@@ -1,0 +1,89 @@
+@model Donation
+@{
+    ViewData["Title"] = "Record contribution";
+    var companies = (List<Company>)ViewBag.Companies;
+    var activities = (List<CsrActivity>)ViewBag.Activities;
+    var investors = (List<ApplicationUser>)ViewBag.Investors;
+}
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="DonorName" class="form-label"></label>
+                    <input asp-for="DonorName" class="form-control" />
+                    <span asp-validation-for="DonorName" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DonorUserId" class="form-label"></label>
+                    <select asp-for="DonorUserId" class="form-select">
+                        <option value="">Not linked to a platform account</option>
+                        @foreach (var investor in investors)
+                        {
+                            <option value="@investor.Id">@investor.FullName (@investor.Email)</option>
+                        }
+                    </select>
+                    <div class="form-text">Linking an investor account lets that donor see this contribution on their dashboard.</div>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CompanyId" class="form-label"></label>
+                    <select asp-for="CompanyId" class="form-select">
+                        <option value="">Select company</option>
+                        @foreach (var company in companies)
+                        {
+                            <option value="@company.Id">@company.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CompanyId" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CsrActivityId" class="form-label"></label>
+                    <select asp-for="CsrActivityId" class="form-select">
+                        <option value="">Unallocated</option>
+                        @foreach (var activity in activities)
+                        {
+                            <option value="@activity.Id">@activity.Title</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CsrActivityId" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Amount" class="form-label"></label>
+                    <input asp-for="Amount" class="form-control" type="number" step="0.01" min="0.01" />
+                    <span asp-validation-for="Amount" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="DonatedOn" class="form-label"></label>
+                    <input asp-for="DonatedOn" class="form-control" />
+                    <span asp-validation-for="DonatedOn" class="field-validation-error"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Status" class="form-label"></label>
+                    <select asp-for="Status" class="form-select">
+                        @foreach (var status in Enum.GetValues<DonationStatus>())
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Reference" class="form-label"></label>
+                    <input asp-for="Reference" class="form-control" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="Description" class="field-validation-error"></span>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Record contribution</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

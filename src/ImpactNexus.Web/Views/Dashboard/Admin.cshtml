@@ -1,0 +1,138 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "System dashboard";
+    ViewData["Subtitle"] = "Platform-wide CSR and CSI performance";
+    var maxMonthly = Model.MonthlyContributions.Count == 0 ? 1m : Math.Max(1m, Model.MonthlyContributions.Max(m => m.Amount));
+}
+<div class="kpi-grid">
+    <div class="kpi">
+        <div class="label">Companies</div>
+        <div class="value">@Model.CompanyCount</div>
+        <div class="hint">@Model.UserCount users, @Model.ActiveUserCount active</div>
+    </div>
+    <div class="kpi kpi-alt">
+        <div class="label">CSR activities</div>
+        <div class="value">@Model.ActivityCount</div>
+        <div class="hint">@Model.ActiveActivityCount in progress</div>
+    </div>
+    <div class="kpi">
+        <div class="label">Contributions received</div>
+        <div class="value">@Model.DonationTotal.ToString("C0", Money.Zar)</div>
+        <div class="hint">@Model.DonationsThisMonth.ToString("C0", Money.Zar) this month</div>
+    </div>
+    <div class="kpi kpi-warn">
+        <div class="label">Bursary value awarded</div>
+        <div class="value">@Model.BursaryAwardedTotal.ToString("C0", Money.Zar)</div>
+        <div class="hint">@Model.ApprovedBursaryCount approved applications</div>
+    </div>
+    <div class="kpi kpi-rose">
+        <div class="label">Volunteer hours</div>
+        <div class="value">@Model.VolunteerHours.ToString("N1")</div>
+        <div class="hint">@Model.BeneficiaryCount beneficiaries recorded</div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Contributions, last six months</h2>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Reports" asp-action="Contributions">Open report</a>
+            </div>
+            <div class="card-body">
+                <div class="spark-wrap">
+                    <div class="spark">
+                        @foreach (var point in Model.MonthlyContributions)
+                        {
+                            var height = Math.Max(4, (int)(point.Amount / maxMonthly * 100));
+                            <div class="bar" style="height:@height%" title="@point.Label: @point.Amount.ToString("C0", Money.Zar)">
+                                <span>@point.Label</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Recent activities</h2></div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr><th>Activity</th><th>Company</th><th>Status</th><th class="text-end">Budget</th></tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var activity in Model.RecentActivities)
+                    {
+                        <tr>
+                            <td><a asp-controller="Activities" asp-action="Details" asp-route-id="@activity.Id">@activity.Title</a></td>
+                            <td>@activity.Company?.Name</td>
+                            <td><span class="badge-status status-@activity.Status.ToString().ToLowerInvariant()">@activity.Status</span></td>
+                            <td class="text-end">@activity.Budget.ToString("C0", Money.Zar)</td>
+                        </tr>
+                    }
+                    @if (Model.RecentActivities.Count == 0)
+                    {
+                        <tr><td colspan="4" class="empty-state">No activities recorded yet.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card mb-4">
+            <div class="card-header"><h2>Top companies by contribution</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Company</th><th>Activities</th><th class="text-end">Received</th></tr></thead>
+                    <tbody>
+                    @foreach (var company in Model.TopCompanies)
+                    {
+                        <tr>
+                            <td>@company.CompanyName</td>
+                            <td>@company.ActivityCount</td>
+                            <td class="text-end">@company.ContributionTotal.ToString("C0", Money.Zar)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h2>Recent contributions</h2></div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Donor</th><th>Date</th><th class="text-end">Amount</th></tr></thead>
+                    <tbody>
+                    @foreach (var donation in Model.RecentDonations)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Donations" asp-action="Details" asp-route-id="@donation.Id">@donation.DonorName</a>
+                                <div class="text-muted" style="font-size:.74rem;">@donation.Company?.Name</div>
+                            </td>
+                            <td>@donation.DonatedOn.ToString("dd MMM yyyy")</td>
+                            <td class="text-end">@donation.Amount.ToString("C0", Money.Zar)</td>
+                        </tr>
+                    }
+                    @if (Model.RecentDonations.Count == 0)
+                    {
+                        <tr><td colspan="3" class="empty-state">No contributions recorded.</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body d-grid gap-2">
+                <a class="btn btn-primary" asp-controller="Users" asp-action="Create">Create a user account</a>
+                <a class="btn btn-outline-primary" asp-controller="Companies" asp-action="Create">Register a company</a>
+                <a class="btn btn-outline-secondary" asp-controller="Reports" asp-action="Index">View all reports</a>
+            </div>
+        </div>
+    </div>
+</div>

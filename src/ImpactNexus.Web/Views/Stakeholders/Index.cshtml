@@ -1,0 +1,43 @@
+@model PagedList<Stakeholder>
+@{
+    ViewData["Title"] = "Stakeholders";
+}
+<div class="page-actions">
+    <a class="btn btn-primary" asp-action="Create">Add stakeholder</a>
+    <form method="get" class="filters mb-0 ms-auto">
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Search name or email" />
+        <select name="type" class="form-select form-select-sm">
+            <option value="">All types</option>
+            @foreach (var type in Enum.GetValues<StakeholderType>())
+            {
+                <option value="@type" selected="@(ViewBag.Type as StakeholderType? == type)">@type</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Phone</th><th>Company</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var stakeholder in Model.Items)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@stakeholder.Id">@stakeholder.FullName</a></td>
+                    <td><span class="badge-soft">@stakeholder.Type</span></td>
+                    <td>@(stakeholder.Email ?? "—")</td>
+                    <td>@(stakeholder.Phone ?? "—")</td>
+                    <td>@(stakeholder.Company?.Name ?? "—")</td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@stakeholder.Id">Edit</a></td>
+                </tr>
+            }
+            @if (Model.Items.Count == 0)
+            {
+                <tr><td colspan="6" class="empty-state"><strong>No stakeholders</strong>Capture people and partner organisations here.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="PagerModel.From(Model)" />
+</div>

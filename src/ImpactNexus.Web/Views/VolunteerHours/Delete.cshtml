@@ -1,0 +1,14 @@
+@model VolunteerHour
+@{
+    ViewData["Title"] = "Delete volunteer hours";
+}
+<div class="card">
+    <div class="card-body">
+        <p>Delete the @Model.Hours.ToString("N1") hour record for <strong>@Model.User?.FullName</strong> dated @Model.Date.ToString("dd MMM yyyy")?</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-confirm="Delete this volunteer hour record?">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete record</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

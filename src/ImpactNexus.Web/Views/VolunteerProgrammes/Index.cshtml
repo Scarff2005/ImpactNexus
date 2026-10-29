@@ -1,0 +1,46 @@
+@model List<VolunteerProgramme>
+@{
+    ViewData["Title"] = "Volunteer programmes";
+    bool canManage = (bool)ViewBag.CanManage;
+}
+<div class="page-actions">
+    @if (canManage)
+    {
+        <a class="btn btn-primary" asp-action="Create">New programme</a>
+    }
+    <form method="get" class="filters mb-0 ms-auto">
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Search programme" />
+        <select name="status" class="form-select form-select-sm">
+            <option value="">All statuses</option>
+            @foreach (var status in Enum.GetValues<ProgrammeStatus>())
+            {
+                <option value="@status" selected="@(ViewBag.Status as ProgrammeStatus? == status)">@status</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Programme</th><th>Company</th><th>Location</th><th>Period</th><th>Status</th><th class="text-end">Hours</th></tr></thead>
+            <tbody>
+            @foreach (var programme in Model)
+            {
+                <tr>
+                    <td><a asp-action="Details" asp-route-id="@programme.Id">@programme.Name</a></td>
+                    <td>@programme.Company?.Name</td>
+                    <td>@(programme.Location?.Name ?? "—")</td>
+                    <td>@programme.StartDate.ToString("dd MMM yyyy")@(programme.EndDate.HasValue ? " – " + programme.EndDate.Value.ToString("dd MMM yyyy") : "")</td>
+                    <td><span class="badge-status status-@programme.Status.ToString().ToLowerInvariant()">@programme.Status</span></td>
+                    <td class="text-end">@programme.VolunteerHours.Sum(v => v.Hours).ToString("N1")</td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="6" class="empty-state"><strong>No volunteer programmes</strong>Programmes will appear here when published.</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
