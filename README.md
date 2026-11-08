@@ -1,5 +1,7 @@
 # Impact Nexus — CSR & CSI Management Platform
 
+![build and test](https://github.com/Scarff2005/ImpactNexus/actions/workflows/ci.yml/badge.svg)
+
 An ASP.NET Core MVC application for managing Corporate Social Responsibility (CSR) and
 Corporate Social Investment (CSI) programmes end to end: companies, donations, activities,
 bursaries, beneficiaries, volunteer programmes, locations, dashboards and exportable reports,
